@@ -69,6 +69,15 @@ pub mod ethereum {
                             block_header.withdrawals_root.as_slice(),
                         )),
                     };
+                    let blob_gas_used = block_header.blob_gas_used.map(Uint::from);
+                    let excess_blob_gas = block_header.excess_blob_gas.map(Uint::from);
+                    let parent_beacon_block_root = match block_header.parent_beacon_root.is_empty()
+                    {
+                        true => None,
+                        false => Some(FixedBytes::from_slice(
+                            block_header.parent_beacon_root.as_slice(),
+                        )),
+                    };
 
                     Ok(Header {
                         parent_hash,
@@ -88,9 +97,9 @@ pub mod ethereum {
                         nonce,
                         base_fee_per_gas,
                         withdrawals_root,
-                        blob_gas_used: None,
-                        excess_blob_gas: None,
-                        parent_beacon_block_root: None,
+                        blob_gas_used,
+                        excess_blob_gas,
+                        parent_beacon_block_root,
                     })
                 }
             }
@@ -114,6 +123,37 @@ pub mod ethereum {
                         TrxTypeArbitrumLegacy => unimplemented!(),
                         TrxTypeOptimismDeposit => unimplemented!(),
                     }
+                }
+            }
+
+            #[cfg(test)]
+            mod tests {
+                use super::*;
+
+                #[test]
+                fn test_block_to_header() {
+                    let reader =
+                        std::fs::File::open("tests/data/exec-layer-block-20562650-header.json")
+                            .unwrap();
+                    let block: Block = serde_json::from_reader(reader).unwrap();
+
+                    // Confirm block number and hash.
+                    assert_eq!(&block.number, &20562650);
+                    assert_eq!(
+                        format!("0x{}", hex::encode(&block.hash)).as_str(),
+                        "0xf218f8b4f7879b1c4a44b658a32d4a338db85c85c2916229d8b1c7728b448382"
+                    );
+
+                    let header = Header::try_from(&block).unwrap();
+
+                    // Calculate the block hash from the header.
+                    // `hash()` calls `keccak256(alloy_rlp::encode(self))`.
+                    let block_hash = header.hash();
+
+                    assert_eq!(
+                        block_hash.to_string().as_str(),
+                        "0xf218f8b4f7879b1c4a44b658a32d4a338db85c85c2916229d8b1c7728b448382"
+                    );
                 }
             }
         }
