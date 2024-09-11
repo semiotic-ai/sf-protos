@@ -201,6 +201,7 @@ pub mod beacon {
         pub mod v1 {
             use crate::{firehose::v2::SingleBlockResponse, StreamingFastProtosError};
             use prost::Message;
+            use types::{BeaconBlock, EthSpec, FullPayload};
 
             tonic::include_proto!("sf.beacon.r#type.v1");
 
@@ -211,6 +212,18 @@ pub mod beacon {
                     let any = response.block.ok_or(StreamingFastProtosError::NullBlock)?;
                     let block = Block::decode(any.value.as_ref())?;
                     Ok(block)
+                }
+            }
+
+            // TODO: Not efficient, but it works.
+            impl<E: EthSpec> TryFrom<Block> for BeaconBlock<E, FullPayload<E>> {
+                type Error = StreamingFastProtosError;
+
+                fn try_from(block: Block) -> Result<Self, Self::Error> {
+                    let json_string = serde_json::to_string(&block)?;
+                    let beacon_block: BeaconBlock<E> = serde_json::from_str(&json_string)?;
+
+                    Ok(beacon_block)
                 }
             }
         }
@@ -224,6 +237,9 @@ pub enum StreamingFastProtosError {
 
     #[error("Error in decoding block: {0}")]
     DecodeError(#[from] prost::DecodeError),
+
+    #[error("JSON error: {0}")]
+    JsonError(#[from] serde_json::Error),
 
     #[error("Null block field in block response")]
     NullBlock,
