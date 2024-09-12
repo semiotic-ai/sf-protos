@@ -4317,8 +4317,10 @@ name = "sf-protos"
 version = "0.1.0"
 dependencies = [
  "alloy-primitives",
+ "bls",
  "ethportal-api",
  "hex",
+ "primitive-types",
  "prost",
  "prost-build",
  "prost-wkt",
@@ -4326,6 +4328,7 @@ dependencies = [
  "reth-primitives",
  "serde",
  "serde_json",
+ "ssz_types 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "tonic",
  "tonic-build",
