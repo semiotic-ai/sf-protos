@@ -365,7 +365,7 @@ pub mod beacon {
                             .ok_or(ProtosError::BlockConversionError)?
                             .seconds as u64,
                         extra_data: extra_data.into(),
-                        base_fee_per_gas: U256::from_big_endian(base_fee_per_gas.as_slice()),
+                        base_fee_per_gas: U256::from_little_endian(base_fee_per_gas.as_slice()),
                         block_hash: ExecutionBlockHash(H256::from_slice(block_hash.as_slice())),
                         transactions: transactions
                             .into_iter()
