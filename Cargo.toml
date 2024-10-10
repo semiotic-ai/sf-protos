@@ -9,7 +9,7 @@ path = "src/lib.rs"
 
 [dependencies]
 alloy-primitives = "=0.7.7"
-bls = { git = "https://github.com/sigp/lighthouse.git", branch = "stable" }
+bls = { git = "https://github.com/semiotic-ai/lighthouse.git", branch = "stable" }
 ethportal-api = { git = "https://github.com/ethereum/trin.git", version = "0.2.2", tag = "v0.1.0-alpha.35" }
 primitive-types = "0.12.2"
 prost = "0.13.1"
@@ -20,7 +20,7 @@ serde = "1.0.196"
 ssz_types = "0.6"
 thiserror = "1.0.62"
 tonic = "0.12.0"
-types = { git = "https://github.com/sigp/lighthouse.git", branch = "stable" }
+types = { git = "https://github.com/semiotic-ai/lighthouse.git", branch = "stable" }
 
 [dev-dependencies]
 hex = "0.4.3"
